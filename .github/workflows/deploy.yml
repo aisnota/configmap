@@ -42,6 +42,7 @@ jobs:
         run: |
           echo "USER_PASSWORD = ${{ env.USER_PASSWORD }}" 
           echo "USER_PASSWORD = ${{ secrets.USER_PASSWORD }}" 
+          echo USER_PASSWORD
   
   my-deploy-job:
     needs: my-build-job
