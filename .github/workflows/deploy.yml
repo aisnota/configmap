@@ -24,4 +24,6 @@ jobs:
       - name: 작업폴더 목록 확인
         run: ls -al
 
+      - name: 환경변수 모두 출력 
+        run: env
         
