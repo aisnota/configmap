@@ -1,54 +1,72 @@
+name: Spring boot docker image CI/CD
 
-name: Github Actions 실행시켜보기
-
-on:
+on: 
   push:
-    branches:
-      - main
-env:
-  NAME: kosa
-  USERNAME: kosa
-  USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+    branches: [ main ]
 
-jobs: 
-  my-build-job:
-    runs-on: ubuntu-latest
-
-    steps: 
-      - name: Hello World 찍기 # Step에 이름 붙이는 기능
-        run: echo "Hello World" # 실행시킬 명령어 작성
-        
-      - name: 여러 명령어 문장 작성하기
-        run: |
-          echo "Good"
-          echo "Morning"
-      
-      - name: 작업폴더가 무엇인지 출력 
-        run: pwd
-
-      - name: 작업 폴더 목록 확인 
-        run: ls -la
-
-      - name: 환경변수 모두 출력
-        run: env
-
-      - name: 환경변수 NAME 출력
-        run: echo ${{ env.NAME }}
-        
-      - name: 환경변수 USERNAME 출력
-        run: echo "USERNAME = ${{ env.USERNAME }}" 
-        
-      - name: 시크릿 USER_PASSWORD 출력
-        run: |
-          echo "USER_PASSWORD = ${{ env.USER_PASSWORD }}" 
-          echo "USER_PASSWORD = ${{ secrets.USER_PASSWORD }}" 
-          echo USER_PASSWORD
-  
-  my-deploy-job:
-    needs: my-build-job
-    name: 배포 작업
+jobs:
+  build:
     runs-on: self-hosted
 
     steps:
-    - name: 배포 작업 1단계 파일 생성
-      run: echo "Hello World" > output.txt
+      # 라이브러리 사용(내 폴더에 있는 소스 복사)
+      # - uses: actions/checkout@v3
+      - name: 폴더 정리
+        run: rm -rf configmap
+
+      - name: 소스 복사
+        run: git clone https://github.com/aisnota/configmap
+
+      # # 윈도우에서는 ,,,실행안됨.
+      # - name: gradlew 파일 실행 권한 설정
+      #   run: |
+      #     cd kosa-devops-step2
+      #     chmod +x gradlew
+
+      # # 테스트 진행
+      # - name: Test with gradle
+      #   run: |
+      #     cd kosa-devops-step2
+      #     ./gradlew --info test
+
+      # # 부트에서 실행파일인 jar 파일 만들겠다.
+      # - name: Spring boot 실행 파일 생성
+      #   run: |
+      #     cd kosa-devops-step2
+      #     ./gradlew bootJar
+
+      # 이미지 생성
+      - name: docker image 생성
+        run: docker build -t hisieun/configmap_step3:latest configmap/.
+
+      # 도커 로그인. 함수 사용
+      - name: docker login
+        uses: docker/login-action@v1
+        with: 
+          username: hisieun 
+          password: ${{secrets.DOCKER_PASSWORD}}
+
+      - name: docker image 허브에 저장
+        run: docker push hisieun/configmap_step3:latest
+      
+      # - name: 파일 업로드
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: my-artifact
+      #     path: |
+      #       kosa-devops-step2/docker-compose_nginx.yml
+      #       kosa-devops-step2/nginx/nginx.conf
+
+  deploy:
+    needs: build
+    name: Deploy
+    runs-on: self-hosted
+    steps:
+      - name: 운영서버로 파일 복사 및 실행
+        run: |
+          cd configmap
+          kubectl apply -f cofigmap.yaml
+          kubectl apply -f deployment.yaml
+          kubectl apply -f service.yaml
+          ./run.sh
+      
