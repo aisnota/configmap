@@ -12,7 +12,7 @@ jobs:
       # 라이브러리 사용(내 폴더에 있는 소스 복사)
       # - uses: actions/checkout@v3
       - name: 폴더 정리
-        run: rm -rf .
+        run: rm -rf ./
 
       - name: 소스 복사
         run: git clone https://github.com/aisnota/configmap .
