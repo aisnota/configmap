@@ -64,8 +64,7 @@ jobs:
     steps:
       - name: 운영서버로 파일 복사 및 실행
         run: |
-          cd configmap
-          kubectl apply -f cofigmap.yaml
+          kubectl apply -f configmap.yaml
           kubectl apply -f deployment.yaml
           kubectl apply -f service.yaml
           ./run.sh
