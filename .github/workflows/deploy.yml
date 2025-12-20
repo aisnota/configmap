@@ -9,14 +9,12 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      # 라이브러리 사용(내 폴더에 있는 소스 복사)
-      # - uses: actions/checkout@v3
       - name: 폴더 정리
         run: rm -rf ./configmap
 
       - name: 소스 복사
-        run: git clone https://github.com/aisnota/configmap
-
+        uses: actions/checkout@v3
+        
       # # 윈도우에서는 ,,,실행안됨.
       # - name: gradlew 파일 실행 권한 설정
       #   run: |
