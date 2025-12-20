@@ -16,7 +16,7 @@ spec:
       - name: web-server
         image: nginx:1.25
         ports:
-        - containerPort: 80
+        - containerPort: 8080
         envFrom:
         - configMapRef:
             name: my-app-config # 위에서 만든 ConfigMap을 참조
