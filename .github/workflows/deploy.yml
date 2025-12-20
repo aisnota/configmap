@@ -13,8 +13,9 @@ jobs:
         run: rm -rf ./configmap
 
       - name: 소스 복사
-        uses: actions/checkout@v3
-        
+        uses: actions/checkout@4
+        # run: git clone https://github.com/aisnota/configmap
+
       # # 윈도우에서는 ,,,실행안됨.
       # - name: gradlew 파일 실행 권한 설정
       #   run: |
