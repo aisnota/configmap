@@ -14,6 +14,12 @@ jobs:
 
       - name: 소스 복사
         uses: actions/checkout@v4
+
+      - name: yaml문법 및 스키마 검증
+        run: |
+          kubectl apply --dry-run=client -f deployment.yaml
+          kubectl apply --dry-run=client -f configmap.yaml
+          kubectl apply --dry-run=client -f service.yaml
         # run: git clone https://github.com/aisnota/configmap
 
       # # 윈도우에서는 ,,,실행안됨.
